@@ -1,0 +1,25 @@
+.FirstInputToken {
+  width: 100%;
+  height: 100vh;
+  background-color: #232323;
+  display: flex;
+  flex-direction: column;
+}
+
+.FirstInputToken-inputBox {
+  margin: 20px;
+  margin-top: 50px;
+  height: 30px;
+}
+
+.FirstInputToken-inputButton {
+  margin: 0 20%;
+  height: 35px;
+}
+
+.FirstInputToken-help {
+  margin: 10px 30%;
+  color: white;
+  background-color: #232323;
+  border-style: none;
+}

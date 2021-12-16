@@ -1,0 +1,53 @@
+.TaskList {
+  width: 100%;
+  height: 100vh;
+  background-color: #232323;
+}
+
+.TaskList-item {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.Tasklist-Item-View {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.TaskList-Item-Name {
+  font-size: 15px;
+  color: white;
+  margin: 10px 10px 5px 10px;
+}
+
+.Tasklist-Item-Timer {
+  margin: 10px 10px 5px 10px;
+  color: white;
+  font-size: 15px;
+}
+
+.TaskList-Item-Day-View {
+  width: 100%;
+  height: 29px;
+}
+
+.TaskLIst-Item-Day {
+  color: white;
+  font-size: 13px;
+  margin-left: 10px;
+}
+
+.TaskList-Item-Line {
+  background-color: white;
+  height: 1px;
+  width: 100%;
+}
+
+.Task-Item-button {
+  background-color: blue;
+}
