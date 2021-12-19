@@ -1,6 +1,6 @@
 {
   "name": "electron-react-boilerplate",
-  "productName": "Asana_Timer",
+  "productName": "AsanaTaskTimer",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Fast Refresh for rapid application development",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -30,8 +30,8 @@
     ]
   },
   "build": {
-    "productName": "asana_timer",
-    "appId": "co.kr.myoung.asana_timer",
+    "productName": "AsanaTaskTimer",
+    "appId": "co.kr.myoung.AsanaTaskTimer",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -102,18 +102,7 @@
     "email": "electronreactboilerplate@gmail.com",
     "url": "https://electron-react-boilerplate.js.org"
   },
-  "contributors": [
-    {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
-    },
-    {
-      "name": "John Tran",
-      "email": "jptran318@gmail.com",
-      "url": "https://github.com/jooohhn"
-    }
-  ],
+  "contributors": [],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
@@ -236,6 +225,7 @@
     "electron-log": "^4.4.1",
     "electron-updater": "^4.3.9",
     "history": "4.x.x",
+    "moment": "^2.29.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^5.3.0",

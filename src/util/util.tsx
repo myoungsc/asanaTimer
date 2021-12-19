@@ -1,3 +1,6 @@
+import moment from 'moment';
+import 'moment/locale/ko';
+
 export const utilA = () => {};
 export const utilB = () => {};
 
@@ -16,4 +19,20 @@ export const calTimerTime = (time?: number) => {
   const secondStr = second < 10 ? `0${second}` : `${second}`;
 
   return `${hourStr}:${minStr}:${secondStr}`;
+};
+
+export const calStartEndTime = (startTime?: string, dueTime?: string) => {
+  if (startTime === null && dueTime === null) {
+    return '정해진 일정 없음';
+  }
+
+  if (startTime === null && dueTime !== null) {
+    const nowText = moment().format('YYYY-MM-DD');
+    if (nowText === dueTime) {
+      return '오늘';
+    }
+    return dueTime;
+  }
+
+  return `${startTime} ~ ${dueTime}`;
 };

@@ -49,11 +49,59 @@
 .TaskDetail-ContentView {
   width: 100%;
   height: auto;
-  background-color: red;
 }
 
 .TaskDetail-ContentView-TopLine {
+  margin-top: 10px;
   width: 100%;
-  height: 10px;
+  height: 5px;
   background-color: #f0f0f0f0;
+}
+
+.TaskDetail-ContentView-MidLine {
+  width: 100%;
+  height: 1px;
+  background-color: #f0f0f0f0;
+}
+
+.Task-ContentView-Title {
+  color: white;
+  font-size: 18px;
+  margin: 10px;
+}
+
+.Task-ContentView-Content {
+  color: white;
+  white-space: pre-wrap;
+  font-size: 15px;
+  margin: 10px;
+}
+
+.Task-ContentView-View {
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+.Task-ContentView-followerView {
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+}
+
+.Task-ContentView-followerText {
+  color: white;
+  font-size: 15px;
+}
+
+.Task-ContentView-follower-name {
+  color: white;
+  font-size: 15px;
+  margin-left: 3px;
+}
+
+.Task-ContentView-Time {
+  color: white;
+  font-size: 15px;
+  margin: 10px;
 }
