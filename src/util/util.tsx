@@ -36,3 +36,23 @@ export const calStartEndTime = (startTime?: string, dueTime?: string) => {
 
   return `${startTime} ~ ${dueTime}`;
 };
+
+export const calUseTime = (useTime: number) => {
+  const hour = parseInt(`${useTime / 3600}`, 10);
+  const other = useTime % 3600;
+  let min = '';
+  if (other <= 1500) {
+    min = '0';
+  } else if (other <= 3000) {
+    min = '25';
+  } else if (other <= 4500) {
+    min = '5';
+  } else {
+    min = '75';
+  }
+  const value = `${hour}.${min}`;
+  if (value === '0.0') {
+    return '0.25';
+  }
+  return value;
+};

@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { serverGetTaskList } from '../../api/serverApi';
 import { TaskContent } from '../../db/taskList';
 import CustomNavigationbar from './CustomNavigationbar';
-import { calTimerTime } from '../../util/util';
+import { calTimerTime, calStartEndTime } from '../../util/util';
 import '../css/TaskList.css';
 
 interface WorkspacesInfo {
@@ -78,7 +78,6 @@ const TaskList = () => {
     );
 
     window.electron.ipcRenderer.on('completeSetUserInfo', (arg: string) => {
-      console.log(arg);
       const temp: { [key: string]: TaskContent } = JSON.parse(arg);
       setTaskKeys(Object.keys(temp));
       setTaskList(temp);
@@ -128,9 +127,7 @@ const TaskList = () => {
             </div>
             <div className="TaskList-Item-Day-View">
               <label className="TaskLIst-Item-Day">
-                {task.start_on !== null && task.due_on !== null
-                  ? task.start_on
-                  : '일정 없음'}
+                {calStartEndTime(task.start_on, task.due_on)}
               </label>
             </div>
             <div className="TaskList-Item-Line" />

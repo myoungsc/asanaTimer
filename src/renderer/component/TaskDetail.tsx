@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { serverGetTaskDetail } from '../../api/serverApi';
+import { useLocation, useHistory } from 'react-router-dom';
+import { serverGetTaskDetail, serverPutDoneTask } from '../../api/serverApi';
 import { TaskContent } from '../../db/taskList';
-import { calTimerTime, calStartEndTime } from '../../util/util';
+import { calTimerTime, calStartEndTime, calUseTime } from '../../util/util';
 import CustomNavigationbar from './CustomNavigationbar';
 import timer_stop from '../../Resource/Image/timer_stop.png';
 import timer_play from '../../Resource/Image/timer_play.png';
@@ -19,17 +19,26 @@ interface TaskDetailParams {
 interface TaskInfo {
   name: string;
   notes: string;
-  custom_fields: [CustomFields];
+  custom_fields: [CustomField];
   followers: [Follower];
   due_on: string;
   start_on: string;
 }
 
-interface CustomFields {
+interface CustomField {
   display_value: string;
   enabled: true;
   gid: string;
   name: string;
+  enum_options: [EnumOptions];
+}
+
+interface EnumOptions {
+  gid: string;
+  color: string;
+  enabled: boolean;
+  name: string;
+  resource_type: string;
 }
 
 interface Follower {
@@ -39,6 +48,7 @@ interface Follower {
 }
 
 const TaskDetail = () => {
+  const history = useHistory();
   const location = useLocation().state as TaskDetailParams;
   const [gid, setGid] = useState<string>('');
   const [token, setToken] = useState<string>('');
@@ -47,6 +57,7 @@ const TaskDetail = () => {
   const [taskDb, setTaskDb] = useState<TaskContent>();
   const [startTimer, setStartTimer] = useState<NodeJS.Timer>();
   const [timerCount, setTimerCount] = useState<number>(0);
+  const [showDoneAlert, setShowDoneAlert] = useState<boolean>(false);
   let changeTime = 0;
 
   const getTaskDetail = async () => {
@@ -61,7 +72,11 @@ const TaskDetail = () => {
   };
 
   const doneTaskBtn = () => {
-    console.log('done btn click');
+    console.log(timerCount);
+    if (startTimer) {
+      clearInterval(startTimer);
+    }
+    setShowDoneAlert(true);
   };
 
   const saveTaskDb = () => {
@@ -103,6 +118,44 @@ const TaskDetail = () => {
       clearInterval(startTimer);
     }
     setStartTimer(undefined);
+  };
+
+  const alertCancelBtn = () => {
+    console.log('alert cancel');
+    setShowDoneAlert(false);
+  };
+
+  const alertDoneBtn = async () => {
+    console.log('alert done', timerCount);
+    const value = calUseTime(timerCount);
+    let selectGid = '';
+    let customFieldGid = '';
+    if (taskInfo) {
+      const customField: [CustomField] = taskInfo.custom_fields;
+      for (let i = 0; i < customField.length; i += 1) {
+        if (i > 0) {
+          customFieldGid = customField[i].gid;
+          const tempGid = customField[i].enum_options.filter(
+            (temp: EnumOptions) => {
+              return temp.name === value;
+            }
+          );
+          selectGid = tempGid[0].gid;
+        }
+      }
+    }
+    const result = await serverPutDoneTask(
+      token,
+      gid,
+      customFieldGid,
+      selectGid
+    );
+    console.log(result);
+    // Todo
+    // 실패면 뒤로 가기 막기
+    // 성공이면 디비에서 삭제해서 리스트에서 안보이게끔, 현재까지는 아사나 확인후 리스트에서 사라짐.. 서브 디비?
+    history.goBack();
+    // setShowDoneAlert(false);
   };
 
   if (!isFirstEvent) {
@@ -192,6 +245,39 @@ const TaskDetail = () => {
           </div>
         </div>
       </div>
+      {showDoneAlert ? (
+        <div
+          onClick={alertCancelBtn}
+          aria-hidden="true"
+          className="Task-AlertView"
+        >
+          <div className="Task-AlertView-Background">
+            <div className="Task-AlertView-ContentView">
+              <label className="Task-AlertView-Title">알림</label>
+              <label className="Task-AlertView-Content">
+                진행된 타이머 시간으로 실제 소요 시간과 Task 완료 처리를
+                하시겠습니까?
+              </label>
+              <div className="Task-AlertView-ButtonView">
+                <button
+                  onClick={alertCancelBtn}
+                  type="button"
+                  className="Task-AlertView-Button"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={alertDoneBtn}
+                  type="button"
+                  className="Task-AlertView-Button"
+                >
+                  확인
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
