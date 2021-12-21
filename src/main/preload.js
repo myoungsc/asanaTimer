@@ -38,6 +38,7 @@ contextBridge.exposeInMainWorld('electron', {
         'completeGetDeviceToken',
         'completeClearDeviceToken',
         'completeGetUserInfo',
+        'didBecomeForeground',
       ];
       if (validChannels.includes(channel)) {
         // Deliberately strip event as it includes `sender`
@@ -54,6 +55,8 @@ contextBridge.exposeInMainWorld('electron', {
         } else if (channel === 'completeGetUserInfo') {
           ipcRenderer.on(channel, (event, ...args) => func(...args));
         } else if (channel === 'completeSetTaskList') {
+          ipcRenderer.on(channel, (event, ...args) => func(...args));
+        } else if (channel === 'didBecomeForeground') {
           ipcRenderer.on(channel, (event, ...args) => func(...args));
         }
       }

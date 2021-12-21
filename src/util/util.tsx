@@ -15,7 +15,7 @@ export const calTimerTime = (time?: number) => {
   const second = parseInt(`${otherValue % 60}`, 10);
 
   const hourStr = hour < 10 ? `0${hour}` : `${hour}`;
-  const minStr = minute < 10 ? `0${minute}` : `${hour}`;
+  const minStr = minute < 10 ? `0${minute}` : `${minute}`;
   const secondStr = second < 10 ? `0${second}` : `${second}`;
 
   return `${hourStr}:${minStr}:${secondStr}`;
@@ -55,4 +55,10 @@ export const calUseTime = (useTime: number) => {
     return '0.25';
   }
   return value;
+};
+
+export const calDiffSecond = (start: moment.Moment, now: moment.Moment) => {
+  const diff = moment.duration(now.diff(start));
+  const diffStr = +parseInt(`${diff.asSeconds()}`, 10);
+  return diffStr;
 };

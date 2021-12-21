@@ -134,6 +134,13 @@ app.on('window-all-closed', () => {
   }
 });
 
+app.on('did-become-active', () => {
+  BrowserWindow.getFocusedWindow()?.webContents.send(
+    'didBecomeForeground',
+    'reload'
+  );
+});
+
 app
   .whenReady()
   .then(() => {

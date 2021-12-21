@@ -1,9 +1,15 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
+import moment from 'moment';
 import { serverGetTaskDetail, serverPutDoneTask } from '../../api/serverApi';
 import { TaskContent } from '../../db/taskList';
-import { calTimerTime, calStartEndTime, calUseTime } from '../../util/util';
+import {
+  calTimerTime,
+  calStartEndTime,
+  calUseTime,
+  calDiffSecond,
+} from '../../util/util';
 import CustomNavigationbar from './CustomNavigationbar';
 import timer_stop from '../../Resource/Image/timer_stop.png';
 import timer_play from '../../Resource/Image/timer_play.png';
@@ -58,7 +64,7 @@ const TaskDetail = () => {
   const [startTimer, setStartTimer] = useState<NodeJS.Timer>();
   const [timerCount, setTimerCount] = useState<number>(0);
   const [showDoneAlert, setShowDoneAlert] = useState<boolean>(false);
-  let changeTime = 0;
+  const [startTime, setStartTime] = useState<moment.Moment>();
 
   const getTaskDetail = async () => {
     const result = await serverGetTaskDetail(location.token, location.gid);
@@ -79,44 +85,49 @@ const TaskDetail = () => {
     setShowDoneAlert(true);
   };
 
-  const saveTaskDb = () => {
+  const saveTaskDb = (count: number) => {
     const temp = taskDb;
     if (temp) {
-      temp.time = timerCount;
+      temp.time += count;
+      setTimerCount(temp.time);
       window.electron.ipcRenderer.renderUpdateTaskTime(gid, temp);
+    }
+  };
+
+  const startTimerInit = () => {
+    if (startTimer) {
+      clearInterval(startTimer);
+      if (startTime) {
+        const diffDuration = calDiffSecond(startTime, moment());
+        saveTaskDb(diffDuration);
+      }
     }
   };
 
   const timerStop = () => {
     console.log('디비에 저장 후.. timer stop');
-    if (startTimer) {
-      clearInterval(startTimer);
-      saveTaskDb();
-    }
+    startTimerInit();
     setStartTimer(undefined);
   };
 
   const timerPlay = () => {
-    console.log('timer play');
-    if (startTimer) {
-      clearInterval(startTimer);
-    }
+    console.log('timer play', timerCount);
+    startTimerInit();
 
     if (taskDb) {
-      changeTime = timerCount;
+      const now = moment();
+      setStartTime(now);
       setStartTimer(
         setInterval(() => {
-          changeTime += 1;
-          setTimerCount(changeTime);
+          const diffDuration = calDiffSecond(now, moment());
+          setTimerCount(taskDb.time + diffDuration);
         }, 1000)
       );
     }
   };
 
   const timerPause = () => {
-    if (startTimer) {
-      clearInterval(startTimer);
-    }
+    startTimerInit();
     setStartTimer(undefined);
   };
 
