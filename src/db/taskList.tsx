@@ -106,7 +106,7 @@ const setTaskList = (taskList: TastLists) => {
     }
     const msgTemplate = (data: string) => `${data}`;
     BrowserWindow.getFocusedWindow()?.webContents.send(
-      'completeSetUserInfo',
+      'completeSetTaskList',
       msgTemplate(JSON.stringify(taskList.taskLists))
     );
   });

@@ -23,3 +23,10 @@
   background-color: #232323;
   border-style: none;
 }
+
+.label-version {
+  margin-top: 10px;
+  color: white;
+  width: 100vw;
+  text-align: center;
+}

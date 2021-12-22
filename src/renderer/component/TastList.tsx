@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { serverGetTaskList } from '../../api/serverApi';
 import { TaskContent } from '../../db/taskList';
 import CustomNavigationbar from './CustomNavigationbar';
+import { LoadingAnimation } from './LoadingAnimation';
 import { calTimerTime, calStartEndTime } from '../../util/util';
 import '../css/TaskList.css';
 import complete_image from '../../Resource/Image/complete_image.png';
@@ -33,11 +34,13 @@ const TaskList = () => {
   const [taskList, setTaskList] = useState<{ [key: string]: TaskContent }>({});
   const [taskListKeys, setTaskKeys] = useState<string[]>();
   const [token, setToken] = useState<string>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   let tempToken = '';
 
   const getTaskList = async (object: UserInfoInterFase) => {
     if (userInfo !== null) {
       console.log('network get task list');
+      setIsLoading(true);
       const result = await serverGetTaskList(
         tempToken,
         object.gid,
@@ -71,15 +74,16 @@ const TaskList = () => {
           'completeClearDeviceToken'
         );
         window.electron.ipcRenderer.renderRemoveEvent('completeGetUserInfo');
-        window.electron.ipcRenderer.renderRemoveEvent('completeSetUserInfo');
+        window.electron.ipcRenderer.renderRemoveEvent('completeSetTaskList');
         history.goBack();
       }
     );
 
-    window.electron.ipcRenderer.on('completeSetUserInfo', (arg: string) => {
+    window.electron.ipcRenderer.on('completeSetTaskList', (arg: string) => {
       const temp: { [key: string]: TaskContent } = JSON.parse(arg);
       setTaskKeys(Object.keys(temp));
       setTaskList(temp);
+      setIsLoading(false);
     });
 
     window.electron.ipcRenderer.renderGetDeviceToken();
@@ -99,7 +103,7 @@ const TaskList = () => {
     window.electron.ipcRenderer.renderRemoveEvent('completeGetDeviceToken');
     window.electron.ipcRenderer.renderRemoveEvent('completeClearDeviceToken');
     window.electron.ipcRenderer.renderRemoveEvent('completeGetUserInfo');
-    window.electron.ipcRenderer.renderRemoveEvent('completeSetUserInfo');
+    window.electron.ipcRenderer.renderRemoveEvent('completeSetTaskList');
 
     console.log(taskList, taskList[gid]);
 
@@ -111,6 +115,7 @@ const TaskList = () => {
 
   return (
     <div className="TaskList">
+      {isLoading ? <LoadingAnimation /> : null}
       <CustomNavigationbar before="/" isBackBtn={false} naviTitle={naviTitle} />
       {taskListKeys?.map((keyValue: string) => {
         const task = taskList[`${keyValue}`];

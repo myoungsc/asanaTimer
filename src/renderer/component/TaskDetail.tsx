@@ -5,6 +5,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import { serverGetTaskDetail, serverPutDoneTask } from '../../api/serverApi';
 import { TaskContent } from '../../db/taskList';
+import { LoadingAnimation } from './LoadingAnimation';
 import {
   calTimerTime,
   calStartEndTime,
@@ -66,16 +67,18 @@ const TaskDetail = () => {
   const [timerCount, setTimerCount] = useState<number>(0);
   const [showDoneAlert, setShowDoneAlert] = useState<boolean>(false);
   const [startTime, setStartTime] = useState<moment.Moment>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getTaskDetail = async () => {
+    setIsLoading(true);
     const result = await serverGetTaskDetail(location.token, location.gid);
     if (result.error === '실패') {
       console.log('실패임.. 꺼지삼');
     } else {
       const temp = result.data;
-      console.log(temp);
       setTaskInfo(temp);
     }
+    setIsLoading(false);
   };
 
   const doneTaskBtn = () => {
@@ -139,6 +142,8 @@ const TaskDetail = () => {
 
   const alertDoneBtn = async () => {
     console.log('alert done', timerCount);
+    setShowDoneAlert(false);
+    setIsLoading(true);
     const value = calUseTime(timerCount);
     let selectGid = '';
     let customFieldGid = '';
@@ -162,7 +167,7 @@ const TaskDetail = () => {
       customFieldGid,
       selectGid
     );
-    setShowDoneAlert(false);
+    setIsLoading(true);
     if (result.error === '실패') {
       alert('잠시 후 다시 시도해주세요.');
     } else {
@@ -173,8 +178,6 @@ const TaskDetail = () => {
       }
       history.goBack();
     }
-    // Todo
-    // 성공이면 디비에서 삭제해서 리스트에서 안보이게끔, 현재까지는 아사나 확인후 리스트에서 사라짐.. 서브 디비?
   };
 
   if (!isFirstEvent) {
@@ -191,6 +194,7 @@ const TaskDetail = () => {
 
   return (
     <div className="TaskDetail">
+      {isLoading ? <LoadingAnimation /> : null}
       <CustomNavigationbar
         before="/taskList"
         isBackBtn
@@ -242,7 +246,10 @@ const TaskDetail = () => {
           </label>
           <div className="TaskDetail-ContentView-MidLine" />
           <label className="Task-ContentView-Time">
-            마감일 : {calStartEndTime(taskInfo?.start_on, taskInfo?.due_on)}
+            마감일 :{' '}
+            {taskInfo
+              ? calStartEndTime(taskInfo?.start_on, taskInfo?.due_on)
+              : ''}
           </label>
           <div className="TaskDetail-ContentView-MidLine" />
 

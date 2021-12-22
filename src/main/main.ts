@@ -11,7 +11,7 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -29,7 +29,9 @@ export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
+    // autoUpdater.checkForUpdatesAndNotify();
+    // createDefaultUpdaetWindow();
+    autoUpdater.checkForUpdates();
   }
 }
 
@@ -182,4 +184,82 @@ ipcMain.on('renderSetOrUpdateTaskList', async (_, arg) => {
 
 ipcMain.on('renderUpdateTaskContent', async (_, gid, taskContent) => {
   updateTaskContent(taskContent, gid);
+});
+
+let updateWin: BrowserWindow | null = null;
+
+function sendStatusToWindow(text: string) {
+  if (updateWin) {
+    updateWin.webContents.send('message', text);
+  }
+}
+
+// function createDefaultUpdaetWindow() {
+//   updateWin = new BrowserWindow({
+//     backgroundColor: '#000000',
+//     webPreferences: { nodeIntegration: true },
+//   });
+
+//   updateWin.on('closed', () => {
+//     updateWin = null;
+//   });
+//   updateWin.loadURL(`file://${__dirname}/version.html#v${app.getVersion()}`);
+//   return updateWin;
+// }
+
+autoUpdater.on('checking-for-update', () => {
+  sendStatusToWindow('Checking for update...');
+  log.info('업데이트 확인 중...');
+});
+autoUpdater.on('update-available', (_info) => {
+  sendStatusToWindow('Update available.');
+  log.info('업데이트가 가능합니다.');
+});
+autoUpdater.on('update-not-available', (_info) => {
+  sendStatusToWindow('Update not available.');
+  log.info('현재 최신버전입니다.');
+});
+autoUpdater.on('error', (err) => {
+  sendStatusToWindow('Error in auto-updater. ' + err);
+  log.info('에러가 발생하였습니다. 에러내용 : ' + err);
+});
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = 'Download speed: ' + progressObj.bytesPerSecond;
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+  log_message =
+    log_message +
+    ' (' +
+    progressObj.transferred +
+    '/' +
+    progressObj.total +
+    ')';
+  sendStatusToWindow(log_message);
+
+  log_message = log_message + ' - 현재 ' + progressObj.percent + '%';
+  log_message =
+    log_message +
+    ' (' +
+    progressObj.transferred +
+    '/' +
+    progressObj.total +
+    ')';
+  log.info(log_message);
+});
+autoUpdater.on('update-downloaded', (_info) => {
+  sendStatusToWindow('Update downloaded');
+  log.info('업데이트가 완료되었습니다.11');
+  const option = {
+    type: 'question',
+    buttons: ['업데이트', '취소'],
+    defaultId: 0,
+    title: 'electron-updater',
+    message: '업데이트가 있습니다. 프로그램을 업데이트 하시겠습니까?',
+  };
+  if (mainWindow) {
+    let btnIndex = dialog.showMessageBoxSync(mainWindow, option);
+
+    if (btnIndex === 0) {
+      autoUpdater.quitAndInstall();
+    }
+  }
 });

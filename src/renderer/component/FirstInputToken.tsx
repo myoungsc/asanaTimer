@@ -1,9 +1,10 @@
 /* eslint-disable no-alert */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useHistory } from 'react-router-dom';
-// import { ipcMain } from 'electron';
+import { LoadingAnimation } from './LoadingAnimation';
 import { useState } from 'react';
 import '../css/FirstInputToken.css';
+import { version } from '../../../release/app/package.json';
 
 declare global {
   interface Window {
@@ -15,9 +16,10 @@ const FirstInputToken = () => {
   const history = useHistory();
   const [isFirstEvent, setIsFirstEvent] = useState<boolean>(false);
   const [deviceToken, setDeviceToken] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const authToken = async (token: string) => {
-    console.log('authtoken');
+    setIsLoading(true);
     const response = await fetch('https://app.asana.com/api/1.0/users/me', {
       method: 'get',
       headers: {
@@ -25,6 +27,7 @@ const FirstInputToken = () => {
         Authorization: `Bearer ${token}`,
       },
     });
+    setIsLoading(false);
     if (response.status === 200) {
       const data = await response.json();
       const userInfo = { userInfo: data.data };
@@ -62,8 +65,10 @@ const FirstInputToken = () => {
     }, 100);
     setIsFirstEvent(true);
   }
+
   return (
     <div className="FirstInputToken">
+      {isLoading ? <LoadingAnimation /> : null}
       <input
         className="FirstInputToken-inputBox"
         name="name"
@@ -78,6 +83,7 @@ const FirstInputToken = () => {
       >
         디바이스토큰 등록
       </button>
+      <label className="label-version">v{version}</label>
       <button
         className="FirstInputToken-help"
         type="button"
