@@ -23,7 +23,7 @@ import {
   clearDeviceTokenInfo,
   setUserInfo,
 } from '../db/userInfo';
-import { setOrUpdateTaskList, updateTaskTime } from '../db/taskList';
+import { setOrUpdateTaskList, updateTaskContent } from '../db/taskList';
 
 export default class AppUpdater {
   constructor() {
@@ -180,6 +180,6 @@ ipcMain.on('renderSetOrUpdateTaskList', async (_, arg) => {
   setOrUpdateTaskList(arg);
 });
 
-ipcMain.on('renderUpdateTaskTime', async (_, gid, taskContent) => {
-  updateTaskTime(taskContent, gid);
+ipcMain.on('renderUpdateTaskContent', async (_, gid, taskContent) => {
+  updateTaskContent(taskContent, gid);
 });

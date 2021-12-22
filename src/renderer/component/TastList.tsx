@@ -8,6 +8,7 @@ import { TaskContent } from '../../db/taskList';
 import CustomNavigationbar from './CustomNavigationbar';
 import { calTimerTime, calStartEndTime } from '../../util/util';
 import '../css/TaskList.css';
+import complete_image from '../../Resource/Image/complete_image.png';
 
 interface WorkspacesInfo {
   gid: string;
@@ -33,8 +34,6 @@ const TaskList = () => {
   const [taskListKeys, setTaskKeys] = useState<string[]>();
   const [token, setToken] = useState<string>();
   let tempToken = '';
-
-  console.log('isFirstEvent', isFirstEvent);
 
   const getTaskList = async (object: UserInfoInterFase) => {
     if (userInfo !== null) {
@@ -92,6 +91,11 @@ const TaskList = () => {
   // };
 
   const moveToTaskDetail = (gid: string) => {
+    if (taskList[gid].completed) {
+      alert('완료된 Task입니다.');
+      return;
+    }
+
     window.electron.ipcRenderer.renderRemoveEvent('completeGetDeviceToken');
     window.electron.ipcRenderer.renderRemoveEvent('completeClearDeviceToken');
     window.electron.ipcRenderer.renderRemoveEvent('completeGetUserInfo');
@@ -107,10 +111,10 @@ const TaskList = () => {
 
   return (
     <div className="TaskList">
-      {console.log(userInfo, taskList)}
       <CustomNavigationbar before="/" isBackBtn={false} naviTitle={naviTitle} />
-      {taskListKeys?.map((keyValue: string, index: number) => {
+      {taskListKeys?.map((keyValue: string) => {
         const task = taskList[`${keyValue}`];
+        console.log(task);
         return task ? (
           <div
             key={keyValue}
@@ -118,7 +122,6 @@ const TaskList = () => {
             onClick={() => moveToTaskDetail(keyValue)}
             onKeyUp={() => {}}
           >
-            {console.log(keyValue, index, task)}
             <div className="Tasklist-Item-View">
               <label className="TaskList-Item-Name">{task.name}</label>
               <label className="Tasklist-Item-Timer">
@@ -131,6 +134,15 @@ const TaskList = () => {
               </label>
             </div>
             <div className="TaskList-Item-Line" />
+            {task.completed ? (
+              <div className="Task-Item-Complete">
+                <img
+                  className="Task-Item-Complete-Image"
+                  src={complete_image}
+                  alt="a"
+                />
+              </div>
+            ) : null}
           </div>
         ) : (
           <div key={1 + keyValue} />

@@ -21,7 +21,7 @@ export const serverGetTaskList = async (
   userGid: string,
   workspacesGid: string
 ) => {
-  const apiUrl = `https://app.asana.com/api/1.0/workspaces/${workspacesGid}/tasks/search?assignee.any=${userGid}&completed=false&sort_by=due_date&sort_ascending=true&opt_fields=[gid, name, resource_type, start_on, due_on, created_on.before]`;
+  const apiUrl = `https://app.asana.com/api/1.0/workspaces/${workspacesGid}/tasks/search?assignee.any=${userGid}&completed=false&sort_by=due_date&sort_ascending=true&opt_fields=[gid, name, resource_type, completed, start_on, due_on, created_on.before]`;
   const response = await fetch(apiUrl, {
     method: 'get',
     headers: {

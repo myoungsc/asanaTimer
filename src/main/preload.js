@@ -11,8 +11,8 @@ contextBridge.exposeInMainWorld('electron', {
     renderSetOrUpdateTaskList(json) {
       ipcRenderer.send('renderSetOrUpdateTaskList', json);
     },
-    renderUpdateTaskTime(gid, taskContent) {
-      ipcRenderer.send('renderUpdateTaskTime', gid, taskContent);
+    renderUpdateTaskContent(gid, taskContent) {
+      ipcRenderer.send('renderUpdateTaskContent', gid, taskContent);
     },
     renderGetDeviceToken() {
       console.log('renderGetDeviceToken');

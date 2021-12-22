@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
@@ -90,7 +91,7 @@ const TaskDetail = () => {
     if (temp) {
       temp.time += count;
       setTimerCount(temp.time);
-      window.electron.ipcRenderer.renderUpdateTaskTime(gid, temp);
+      window.electron.ipcRenderer.renderUpdateTaskContent(gid, temp);
     }
   };
 
@@ -161,12 +162,19 @@ const TaskDetail = () => {
       customFieldGid,
       selectGid
     );
-    console.log(result);
+    setShowDoneAlert(false);
+    if (result.error === '실패') {
+      alert('잠시 후 다시 시도해주세요.');
+    } else {
+      const temp = taskDb;
+      if (temp) {
+        temp.completed = true;
+        await window.electron.ipcRenderer.renderUpdateTaskContent(gid, temp);
+      }
+      history.goBack();
+    }
     // Todo
-    // 실패면 뒤로 가기 막기
     // 성공이면 디비에서 삭제해서 리스트에서 안보이게끔, 현재까지는 아사나 확인후 리스트에서 사라짐.. 서브 디비?
-    history.goBack();
-    // setShowDoneAlert(false);
   };
 
   if (!isFirstEvent) {

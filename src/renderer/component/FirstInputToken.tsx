@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useHistory } from 'react-router-dom';
 // import { ipcMain } from 'electron';

@@ -12,6 +12,7 @@ interface ServerTaskList {
   name: string;
   resource_type: string;
   due_on: string;
+  completed: boolean;
   start_on: string;
 }
 
@@ -29,14 +30,14 @@ export interface TaskContent {
   time: number;
   start_on: string;
   due_on: string;
+  completed: boolean;
 }
 
 export const tempTastlist = () => {};
 
-export function updateTaskTime(taskContent: TaskContent, gid: string) {
+export function updateTaskContent(taskContent: TaskContent, gid: string) {
   const beforeTask = getTaskList();
   const tempTask: { [key: string]: TaskContent } = beforeTask.taskLists;
-  console.log(tempTask, tempTask[`${gid}`]);
   tempTask[`${gid}`] = taskContent;
   beforeTask.taskLists = tempTask;
   setTaskList(beforeTask);
@@ -44,16 +45,12 @@ export function updateTaskTime(taskContent: TaskContent, gid: string) {
 
 export function setOrUpdateTaskList(taskList: DataJSON) {
   let beforeTask: TastLists = getTaskList();
-  console.log('가지고 온 ', beforeTask);
   if (Object.keys(beforeTask).length === 0) {
     beforeTask = { taskLists: {} };
   }
 
   const tempTask: { [key: string]: TaskContent } = beforeTask.taskLists;
   const afterTask: [ServerTaskList] = taskList.data;
-
-  console.log('그리고 나서', afterTask);
-  console.log(Object.keys(tempTask));
 
   Object.keys(tempTask).map((value: string): void => {
     let isDone = false;
@@ -67,8 +64,7 @@ export function setOrUpdateTaskList(taskList: DataJSON) {
     }
   });
 
-  afterTask.map((value: ServerTaskList, index: number): void => {
-    console.log(value, index);
+  afterTask.map((value: ServerTaskList): void => {
     const taskGid = value.gid;
 
     if (Object.keys(tempTask).includes(taskGid)) {
@@ -77,6 +73,7 @@ export function setOrUpdateTaskList(taskList: DataJSON) {
       info.name = value.name;
       info.start_on = value.start_on;
       info.due_on = value.due_on;
+      info.completed = value.completed;
       tempTask[`${taskGid}`] = info;
     } else {
       console.log('존재안함');
@@ -86,6 +83,7 @@ export function setOrUpdateTaskList(taskList: DataJSON) {
         resource_type: value.resource_type,
         start_on: value.start_on,
         due_on: value.due_on,
+        completed: value.completed,
       };
       tempTask[`${value.gid}`] = newTask;
     }

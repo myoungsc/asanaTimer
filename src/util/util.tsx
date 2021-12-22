@@ -41,11 +41,11 @@ export const calUseTime = (useTime: number) => {
   const hour = parseInt(`${useTime / 3600}`, 10);
   const other = useTime % 3600;
   let min = '';
-  if (other <= 1500) {
+  if (other <= 900) {
     min = '0';
-  } else if (other <= 3000) {
+  } else if (other <= 1800) {
     min = '25';
-  } else if (other <= 4500) {
+  } else if (other <= 2700) {
     min = '5';
   } else {
     min = '75';
